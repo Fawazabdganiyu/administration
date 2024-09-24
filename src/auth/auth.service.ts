@@ -87,7 +87,7 @@ export class AuthService {
       if (data.error) {
         throw new BadRequestException(data.error.message);
       }
-      console.log(data);
+
       const { idToken, expiresIn, localId } = data;
 
       return {

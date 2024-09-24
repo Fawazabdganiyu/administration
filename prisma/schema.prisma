@@ -20,6 +20,7 @@ model User {
   numberOfProducts  Int?
   percentage        Float?
   role              Role       @default(USER)
+  image             String?
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt
 }

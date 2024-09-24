@@ -8,6 +8,8 @@ import {
   Put,
   ParseIntPipe,
   Req,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { Auth } from 'src/auth/decorators/auth.decorator';
@@ -17,10 +19,15 @@ import { Request } from 'express';
 import { Prisma, Role } from '@prisma/client';
 import { plainToClass } from 'class-transformer';
 import { validate } from 'class-validator';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly cloudinaryService: CloudinaryService,
+  ) {}
 
   @Put()
   @Auth('USER')
@@ -72,5 +79,17 @@ export class UserController {
   @Delete(':uid')
   remove(@Param('uid', ParseIntPipe) uid: string) {
     return this.userService.remove(uid);
+  }
+
+  @Auth('ADMIN')
+  @Put('image-upload/:uid')
+  @UseInterceptors(FileInterceptor('image'))
+  async uploadImage(
+    @Param('uid') uid: string,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    const result = await this.cloudinaryService.upload(image);
+    console.log(result);
+    return this.userService.update(uid, { image: result.secure_url });
   }
 }

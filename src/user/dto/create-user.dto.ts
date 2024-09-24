@@ -9,4 +9,7 @@ export class CreateUserDto {
 
   @IsInt()
   numberOfProducts: number;
+
+  @IsString()
+  image: string;
 }
