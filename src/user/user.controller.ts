@@ -62,7 +62,7 @@ export class UserController {
     return this.userService.findOne(uid);
   }
 
-  @Auth('ADMIN', 'USER')
+  @Auth('USER')
   @Patch(':uid')
   update(@Param('uid') uid: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(uid, updateUserDto);
