@@ -38,21 +38,37 @@ export class UserService {
   }
 
   async findAll() {
-    return this.databaseService.user.findMany();
+    const users = await this.databaseService.user.findMany();
+    if (!users.length) return new NotFoundException('No users found');
+
+    return users;
   }
 
-  findMe(uid: string) {
-    return this.databaseService.user.findUnique({
+  async findMe(uid: string) {
+    const user = await this.databaseService.user.findUnique({
       where: { id: uid },
     });
+
+    if (!user) return new NotFoundException('User not found');
+
+    return user;
   }
   async findOne(uid: string) {
-    return this.databaseService.user.findUnique({
+    const user = await this.databaseService.user.findUnique({
       where: { id: uid },
     });
+
+    if (!user) return new NotFoundException('User not found');
+
+    return user;
   }
 
   async update(uid: string, updateUserDto: Prisma.UserUpdateInput) {
+    const user = await this.databaseService.user.findUnique({
+      where: { id: uid },
+    });
+    if (!user) return new NotFoundException('User not found');
+
     if (!Object.keys(updateUserDto).length) {
       return new BadRequestException('No data provided');
     }
@@ -61,10 +77,6 @@ export class UserService {
     if (updateUserDto.numberOfProducts === 0) {
       updateUserDto.percentage = 0;
     }
-
-    const user = await this.databaseService.user.findUnique({
-      where: { id: uid },
-    });
 
     // Handle when the number of users is not provided
     let numberOfUsers = updateUserDto.numberOfUsers;
@@ -90,9 +102,7 @@ export class UserService {
     const user = await this.databaseService.user.findUnique({
       where: { id: uid },
     });
-    if (!user) {
-      return new NotFoundException('User not found');
-    }
+    if (!user) return new NotFoundException('User not found');
 
     return this.databaseService.user.delete({
       where: { id: uid },

@@ -61,7 +61,7 @@ export class UserController {
   @Auth('ADMIN', 'USER')
   findMe(@Req() req: Request) {
     const { uid } = req.user;
-    return this.userService.findOne(uid);
+    return this.userService.findMe(uid);
   }
 
   @Auth('ADMIN')
