@@ -12,7 +12,8 @@ export class UserService {
 
   async create(createUserDto: Prisma.UserCreateInput) {
     try {
-      // Calculate the percentage of users to products
+      if (!Object.keys(createUserDto).length)
+        return new BadRequestException('No data provided');
 
       // Only calculate the percentage if both the number of users and products are provided
       if (createUserDto.numberOfUsers && createUserDto.numberOfProducts) {
