@@ -58,6 +58,7 @@ export class UserController {
   }
 
   @Get('me')
+  @Auth('ADMIN', 'USER')
   findMe(@Req() req: Request) {
     const { uid } = req.user;
     return this.userService.findOne(uid);
