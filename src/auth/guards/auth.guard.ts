@@ -16,7 +16,10 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const app = this.admin.setup();
-    const idToken = context.getArgs()[0]?.headers?.authorization.split(' ')[1];
+    const idToken = context.getArgs()[0]?.headers?.authorization?.split(' ')[1];
+    if (!idToken) {
+      throw new UnauthorizedException('No token provided');
+    }
 
     const permissions = this.reflector.get<string[]>(
       'permissions',
@@ -28,12 +31,12 @@ export class AuthGuard implements CanActivate {
       // Attach the user claims to the request object
       context.switchToHttp().getRequest().user = claims;
 
-      if (claims?.role === permissions[0]) return true;
+      if (permissions.includes(claims?.role)) return true;
 
       throw new UnauthorizedException();
     } catch (error) {
       console.error('Error', error);
-      throw new UnauthorizedException();
+      throw new UnauthorizedException(error.message);
     }
   }
 }

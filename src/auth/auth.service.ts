@@ -1,6 +1,6 @@
 import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
 import { FirebaseAdmin } from 'config/firebase.setup';
-import { SignupAuthDto, VerifyEmailDto } from './dto';
+import { LoginAuthDto, SignupAuthDto, VerifyEmailDto } from './dto';
 
 @Injectable()
 export class AuthService {
@@ -51,6 +51,51 @@ export class AuthService {
         data: {
           uid: user.uid,
           role: user.customClaims?.role,
+        },
+        statusCode: HttpStatus.OK,
+      };
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+
+  async login(loginAuthDto: LoginAuthDto) {
+    const { email, password } = loginAuthDto;
+
+    // Firebase REST API URL for email/password sign-in
+    // This is done here because there is no frontend to handle the sign-in
+    const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.FIREBASE_API_KEY}`;
+
+    try {
+      // Make a POST request to the Firebase REST API
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password,
+          returnSecureToken: true,
+          //expiresIn: 60 * 60 * 2, // 2 hours
+          expiresIn: 60 * 30, // 30 minutes
+        }),
+      });
+
+      // Parse the response
+      const data = await response.json();
+      if (data.error) {
+        throw new BadRequestException(data.error.message);
+      }
+      console.log(data);
+      const { idToken, expiresIn, localId } = data;
+
+      return {
+        message: 'Login successful',
+        data: {
+          idToken,
+          expiresIn: `${expiresIn / 60} minutes`,
+          localId,
         },
         statusCode: HttpStatus.OK,
       };

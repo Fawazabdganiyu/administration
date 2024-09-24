@@ -1,2 +1,3 @@
-export * from './signupAuth.dto';
-export * from './verifyEmail.dto';
+export * from './signup-auth.dto';
+export * from './verify-email.dto';
+export * from './login-auth.dto';

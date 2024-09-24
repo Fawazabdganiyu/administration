@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "User" ALTER COLUMN "percentage" SET DATA TYPE DOUBLE PRECISION;
