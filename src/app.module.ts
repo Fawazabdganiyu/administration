@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -16,7 +17,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     DatabaseModule,
     CloudinaryModule,
   ],
-  controllers: [],
+  controllers: [AppController],
   providers: [],
 })
 export class AppModule {}
